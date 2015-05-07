@@ -35,9 +35,11 @@ module.exports = function (grunt) {
 				options: {
 					basePath: 'test/fixtures',
 					appPath: 'src/app',
+					appFile: 'App.js',
+					appName: 'app',
 					src: 'src',
 					baseUrl: '',
-					dest: 'tmp/default-option-dependencies.json',
+					dist: 'tmp/default-option-dependencies.json',
 					removePrefix: 'hg.'
 				}
 			}

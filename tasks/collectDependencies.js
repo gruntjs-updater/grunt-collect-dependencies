@@ -10,9 +10,8 @@ module.exports = function (grunt) {
 
 	var path = require('path');
 	var findup = require('findup-sync');
-	var minimatch = require('minimatch');
 
-	var options, appName;
+	var options;
 	var modules = [];
 
 	function collectModuleDependenciesFor(app) {
@@ -22,17 +21,11 @@ module.exports = function (grunt) {
 		for (var i = 0; i < appModules.length; i++) {
 			recursiveMagic(appModules[i]);
 		}
-		appName = getAppName(appContent);
-
 		optimiseModulesList();
 	}
 
 	function getAppFullPath(app) {
-		return path.join(options.basePath, grunt.config.process(app), 'App.js')
-	}
-
-	function getAppName(content) {
-		return content.match(/\.module\('([\w|.]+)'/i)[1].replace(options.removePrefix, '');
+		return path.join(options.basePath, app, options.appFile);
 	}
 
 	function getListOfModulesFrom(content) {
@@ -44,7 +37,7 @@ module.exports = function (grunt) {
 		if (parsedModules) {
 			var modules = [];
 
-			for (var i = 0; i < parsedModules.length; i++) {
+			for (var i = 0; i < parsedModules.length; i ++) {
 				modules.push(parsedModules[i].replace(/'/g, '').replace(options.removePrefix, '').replace(/\./g, '/'));
 			}
 			return modules;
@@ -62,6 +55,8 @@ module.exports = function (grunt) {
 	}
 
 	function recursiveMagic(module) {
+		grunt.log.debug('Checking ' + module);
+
 		if (modules.indexOf(module) !== -1) {
 			return;
 		}
@@ -70,10 +65,11 @@ module.exports = function (grunt) {
 		if (!subModules) {
 			return;
 		}
+		modules.push(module);
+
 		for (var i = 0; i < subModules.length; i++) {
 			recursiveMagic(subModules[i]);
 		}
-		modules.push(module);
 	}
 
 	function getContent(module) {
@@ -91,7 +87,7 @@ module.exports = function (grunt) {
 		modules.sort();
 
 		for (var i = 0; i < modules.length; i++) {
-			if ((modules[i] + '/').indexOf(modules[i - 1] + '/') !== -1 || modules[i].indexOf(appName) !== -1) {
+			if ((modules[i] + '/').indexOf(modules[i - 1] + '/') !== -1 || modules[i].indexOf(options.appName) !== -1) {
 				modules.splice(i, 1);
 				i--;
 			}
@@ -114,14 +110,16 @@ module.exports = function (grunt) {
 	}
 
 	function getPath(module) {
-		var fullPath = findup(path.join(options.basePath, options.src) + '/**/' + path.join(module, 'Module.js'), {nocase: true});
-		var modulePath = fullPath.split(options.basePath)[1].replace('Module.js', '').substring(1);
+		grunt.log.debug('Getting path for ' + module);
 
-		return path.join(options.baseUrl, modulePath);
+		var fullPath = findup(path.join(options.basePath, options.src) + '/*/' + path.join(module, 'Module.js'), {nocase: true});
+		var modulePath = fullPath.split(options.src)[1].replace('Module.js', '');
+
+		return path.join(options.baseUrl, options.src, modulePath);
 	}
 
 	function addAppFilesTo(dependencies) {
-		dependencies.js.push(path.join(options.appPath, 'App.js'));
+		dependencies.js.push(path.join(options.appPath, options.appFile));
 		dependencies.js.push(path.join(options.appPath, '**/Module.js'));
 		dependencies.js.push(path.join(options.appPath, '**/*.js'));
 		dependencies.html.push(path.join(options.appPath, '**/*.html'));
@@ -130,20 +128,18 @@ module.exports = function (grunt) {
 	}
 
 	function write(dependencies) {
-		grunt.file.write(grunt.config.process(options.dest), JSON.stringify(dependencies, null, 2));
+		grunt.file.write(grunt.config.process(options.dist), JSON.stringify(dependencies, null, 2));
 	}
 
 	grunt.registerMultiTask('collectDependencies', 'Collect AngularJS app dependencies into a JSON file', function () {
 		grunt.log.debug('Starting task "collectDependencies"...');
 
+		modules = [];
 		options = this.options({
 			basePath: '',
+			baseUrl: '',
 			removePrefix: ''
 		});
-		options.basePath = grunt.config.process(options.basePath);
-		options.src = grunt.config.process(options.src);
-		options.appPath = grunt.config.process(options.appPath);
-
 		collectModuleDependenciesFor(options.appPath);
 
 		grunt.log.debug('Depending on modules: ' + modules);
