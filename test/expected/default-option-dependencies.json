@@ -1,0 +1,19 @@
+{
+  "js": [
+    "src/modules/desktop/**/Module.js",
+    "src/modules/tablet/**/Module.js",
+    "src/modules/tv/**/Module.js",
+    "src/modules/desktop/**/*.js",
+    "src/modules/tablet/**/*.js",
+    "src/modules/tv/**/*.js",
+    "src/app/App.js",
+    "src/app/**/Module.js",
+    "src/app/**/*.js"
+  ],
+  "html": [
+    "src/modules/desktop/**/*.html",
+    "src/modules/tablet/**/*.html",
+    "src/modules/tv/**/*.html",
+    "src/app/**/*.html"
+  ]
+}

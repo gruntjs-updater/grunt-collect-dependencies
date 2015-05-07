@@ -7,26 +7,47 @@
  */
 module.exports = function (grunt) {
 
-  grunt.initConfig({
-    collect_dependencies: {
-      default_options: {
-        options: {
-        },
-        files: {
-          'tmp/default_options': ['test/fixtures/testing', 'test/fixtures/123']
-        }
-      },
-      custom_options: {
-        options: {
-          separator: ': ',
-          punctuation: ' !!!'
-        },
-        files: {
-          'tmp/custom_options': ['test/fixtures/testing', 'test/fixtures/123']
-        }
-      }
-    }
-  });
+	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-contrib-clean');
+	grunt.loadNpmTasks('grunt-contrib-nodeunit');
 
-  grunt.loadTasks('tasks');
+	grunt.loadTasks('tasks');
+
+	grunt.initConfig({
+
+		jshint: {
+			all: [
+				'Gruntfile.js',
+				'tasks/*.js',
+				'<%= nodeunit.tests %>'
+			],
+			options: {
+				jshintrc: '.jshintrc'
+			}
+		},
+
+		clean: {
+			tests: ['tmp']
+		},
+
+		collectDependencies: {
+			defaultOptions: {
+				options: {
+					basePath: 'test/fixtures',
+					appPath: 'src/app',
+					src: 'src',
+					baseUrl: '',
+					dest: 'tmp/default-option-dependencies.json',
+					removePrefix: 'hg.'
+				}
+			}
+		},
+
+		nodeunit: {
+			tests: ['test/*Spec.js']
+		}
+	});
+
+	grunt.registerTask('test', ['jshint', 'clean', 'collectDependencies', 'nodeunit']);
+	grunt.registerTask('default', ['test']);
 };
