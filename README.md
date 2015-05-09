@@ -54,8 +54,6 @@ Remove prefix from module names.
 
 ### Usage Examples
 
-#### Default Options
-
 ```js
 grunt.initConfig({
   collectDependencies: {
