@@ -58,16 +58,16 @@ Remove prefix from module names.
 
 ```js
 grunt.initConfig({
-  app: {
-  	options: {
-  		ppPath: 'src/facebook/',
-  		appFile: 'App.js',
-  		appName: 'Facebook',
-  		src: 'src/',
-  		dist: 'tmp/facebook-dependencies.json',
-  		removePrefix: 'fb.'
-		}
-	}
+  collectDependencies: {
+    options: {
+      appPath: 'src/facebook/',
+      appFile: 'App.js',
+      appName: 'Facebook',
+      src: 'src/',
+      dist: 'tmp/facebook-dependencies.json',
+      removePrefix: 'fb.'
+    }
+  }
 });
 ```
 
