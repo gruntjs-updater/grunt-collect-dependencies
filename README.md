@@ -19,66 +19,54 @@ grunt.loadNpmTasks('grunt-collect-dependencies');
 
 ## The "collectDependencies" task
 
-### Overview
-In your project's Gruntfile, add a section named `collectDependencies` to the data object passed into `grunt.initConfig()`.
-
-```js
-grunt.initConfig({
-
-  collectDependencies: {
-    options: {
-      // Task-specific options go here.
-    },
-    your_target: {
-      // Target-specific file lists and/or options go here.
-    },
-  },
-});
-```
-
 ### Options
 
-#### options.separator
+#### options.appPath
 Type: `String`
-Default value: `',  '`
 
-A string value that is used to do something with whatever.
+The app path where to find your application AngularJS module.
 
-#### options.punctuation
+#### options.appFile
 Type: `String`
-Default value: `'.'`
 
-A string value that is used to do something else with whatever else.
+The app file name.
+
+#### options.appName
+Type: `String`
+
+The app module name.
+
+#### options.src
+Type: `String`
+
+Source path where to start looking dependencies.
+
+#### options.dist
+Type: `String`
+
+Path where to write the dependency file.
+
+#### options.removePrefix
+Type: `String`
+Default: `''` 
+
+Remove prefix from module names.
 
 ### Usage Examples
 
 #### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
-
-```js
-grunt.initConfig({
-  test: {
-    options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-});
-```
-
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
 
 ```js
 grunt.initConfig({
   test: {
     options: {
-      separator: ': ',
-      punctuation: ' !!!',
-    },
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
+			appPath: 'src/facebook/',
+			appFile: 'App.js',
+			appName: 'Facebook',
+			src: 'src/',
+			dist: 'tmp/facebook-dependencies.json',
+			removePrefix: 'fb.'
+		}
   },
 });
 ```
@@ -87,4 +75,4 @@ grunt.initConfig({
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
-_(Nothing yet)_
+* 2015-05-08 v1.0.0 Initial release
