@@ -8,12 +8,6 @@
 module.exports = function (grunt) {
 	'use strict';
 
-	var path = require('path');
-	var findup = require('findup-sync');
-
-	var options;
-	var modules = [];
-
 	grunt.registerMultiTask('collectDependencies', 'Collect AngularJS app dependencies into a JSON file', function () {
 		modules = [];
 		options = this.options({
@@ -27,6 +21,12 @@ module.exports = function (grunt) {
 
 		write(dependenciesList());
 	});
+
+	var path = require('path');
+	var findup = require('findup-sync');
+
+	var options;
+	var modules = [];
 
 	function collectModuleDependenciesFor(app) {
 		var appContent = grunt.file.read(getAppFullPath(app));
@@ -133,7 +133,12 @@ module.exports = function (grunt) {
 	}
 
 	function getFullPathOf(module) {
-		return findup(path.join(options.basePath, options.src) + '/*/' + path.join(module, 'Module.js'), {nocase: true});
+		var modulePath = findup(path.join(options.basePath, options.src, module, 'Module.js'), {nocase: true});
+
+		if (modulePath === null) {
+			return findup(path.join(options.basePath, options.src) + '/*/' + path.join(module, 'Module.js'), {nocase: true});
+		}
+		return modulePath;
 	}
 
 	function addAppFilesTo(dependencies) {
