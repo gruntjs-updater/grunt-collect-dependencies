@@ -1,7 +1,7 @@
 {
   "name": "grunt-collect-dependencies",
   "description": "Collect AngularJS app dependencies into a JSON file",
-  "version": "1.0.2",
+  "version": "1.0.6",
   "homepage": "https://github.com/ukupat/grunt-collect-dependencies",
   "author": {
     "name": "Uku Pattak",
@@ -27,8 +27,7 @@
     "test": "grunt test"
   },
   "dependencies": {
-    "findup-sync": "latest",
-    "minimatch": "latest"
+    "findup-sync": "latest"
   },
   "devDependencies": {
     "grunt": "~0.4.5",

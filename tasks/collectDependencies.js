@@ -14,6 +14,20 @@ module.exports = function (grunt) {
 	var options;
 	var modules = [];
 
+	grunt.registerMultiTask('collectDependencies', 'Collect AngularJS app dependencies into a JSON file', function () {
+		modules = [];
+		options = this.options({
+			basePath: '',
+			baseUrl: '',
+			removePrefix: ''
+		});
+		collectModuleDependenciesFor(options.appPath);
+
+		grunt.log.debug('App "' + options.appName + '" dependes on modules: ' + modules);
+
+		write(dependenciesList());
+	});
+
 	function collectModuleDependenciesFor(app) {
 		var appContent = grunt.file.read(getAppFullPath(app));
 		var appModules = getListOfModulesFrom(appContent);
@@ -51,13 +65,13 @@ module.exports = function (grunt) {
 		if (!parsedModules) {
 			return;
 		}
-		return parsedModules.match(/'([\w\.]*)'*/gi);
+		var modules = parsedModules.match(/'([\w\.]*)'*/gi);
+
+		return modules;
 	}
 
 	function recursiveMagic(module) {
-		grunt.log.debug('Checking ' + module);
-
-		if (modules.indexOf(module) !== -1) {
+		if (modules.indexOf(module) !== -1 || !module) {
 			return;
 		}
 		var subModules = getListOfModulesFrom(getContent(module));
@@ -65,6 +79,8 @@ module.exports = function (grunt) {
 		if (!subModules) {
 			return;
 		}
+		grunt.log.debug('Module "' + module + '" dependes on modules: ' + subModules);
+
 		modules.push(module);
 
 		for (var i = 0; i < subModules.length; i++) {
@@ -73,7 +89,7 @@ module.exports = function (grunt) {
 	}
 
 	function getContent(module) {
-		var modulePath = findup(path.join(options.basePath, options.src) + '/**/' + path.join(module, 'Module.js'), {nocase: true});
+		var modulePath = getFullPathOf(module);
 
 		if (modulePath === null) {
 			grunt.log.debug('Module "' + module + '" is missing');
@@ -110,12 +126,14 @@ module.exports = function (grunt) {
 	}
 
 	function getPath(module) {
-		grunt.log.debug('Getting path for ' + module);
-
-		var fullPath = findup(path.join(options.basePath, options.src) + '/*/' + path.join(module, 'Module.js'), {nocase: true});
+		var fullPath = getFullPathOf(module);
 		var modulePath = fullPath.split(options.src)[1].replace('Module.js', '');
 
 		return path.join(options.baseUrl, options.src, modulePath);
+	}
+
+	function getFullPathOf(module) {
+		return findup(path.join(options.basePath, options.src) + '/*/' + path.join(module, 'Module.js'), {nocase: true});
 	}
 
 	function addAppFilesTo(dependencies) {
@@ -130,20 +148,4 @@ module.exports = function (grunt) {
 	function write(dependencies) {
 		grunt.file.write(grunt.config.process(options.dist), JSON.stringify(dependencies, null, 2));
 	}
-
-	grunt.registerMultiTask('collectDependencies', 'Collect AngularJS app dependencies into a JSON file', function () {
-		grunt.log.debug('Starting task "collectDependencies"...');
-
-		modules = [];
-		options = this.options({
-			basePath: '',
-			baseUrl: '',
-			removePrefix: ''
-		});
-		collectModuleDependenciesFor(options.appPath);
-
-		grunt.log.debug('Depending on modules: ' + modules);
-
-		write(dependenciesList());
-	});
 };
