@@ -15,6 +15,7 @@ module.exports = function (grunt) {
 			baseUrl: '',
 			removePrefix: ''
 		});
+		formatOptionPaths();
 		collectModuleDependenciesFor(options.appPath);
 
 		grunt.log.debug('App "' + options.appName + '" dependes on modules: ' + modules);
@@ -27,6 +28,11 @@ module.exports = function (grunt) {
 
 	var options;
 	var modules = [];
+
+	function formatOptionPaths() {
+		options.src = path.join(options.src);
+		options.dist = path.join(options.dist);
+	}
 
 	function collectModuleDependenciesFor(app) {
 		var appContent = grunt.file.read(getAppFullPath(app));
@@ -114,11 +120,11 @@ module.exports = function (grunt) {
 		var dependencies = {js: [], html: []};
 
 		for (var i = 0; i < modules.length; i++) {
-			dependencies.js.push(getPath(modules[i]) + '**/Module.js');
-			dependencies.html.push(getPath(modules[i]) + '**/*.html');
+			dependencies.js.push(path.join(getPath(modules[i]) + '**/Module.js').replace(/\\/g, '/'));
+			dependencies.html.push(path.join(getPath(modules[i]) + '**/*.html').replace(/\\/g, '/'));
 		}
 		for (i = 0; i < modules.length; i++) {
-			dependencies.js.push(getPath(modules[i]) + '**/*.js');
+			dependencies.js.push(path.join(getPath(modules[i]) + '**/*.js').replace(/\\/g, '/'));
 		}
 		dependencies = addAppFilesTo(dependencies);
 
@@ -136,16 +142,16 @@ module.exports = function (grunt) {
 		var modulePath = findup(path.join(options.basePath, options.src, module, 'Module.js'), {nocase: true});
 
 		if (modulePath === null) {
-			return findup(path.join(options.basePath, options.src) + '/*/' + path.join(module, 'Module.js'), {nocase: true});
+			return findup(path.join(options.basePath, options.src, '/*/', module, 'Module.js'), {nocase: true});
 		}
 		return modulePath;
 	}
 
 	function addAppFilesTo(dependencies) {
-		dependencies.js.push(path.join(options.appPath, options.appFile));
-		dependencies.js.push(path.join(options.appPath, '**/Module.js'));
-		dependencies.js.push(path.join(options.appPath, '**/*.js'));
-		dependencies.html.push(path.join(options.appPath, '**/*.html'));
+		dependencies.js.push(path.join(options.appPath, options.appFile).replace(/\\/g, '/'));
+		dependencies.js.push(path.join(options.appPath, '**/Module.js').replace(/\\/g, '/'));
+		dependencies.js.push(path.join(options.appPath, '**/*.js').replace(/\\/g, '/'));
+		dependencies.html.push(path.join(options.appPath, '**/*.html').replace(/\\/g, '/'));
 
 		return dependencies;
 	}
