@@ -2,22 +2,22 @@
   "name": "grunt-collect-dependencies",
   "description": "Collect AngularJS app dependencies into a JSON file",
   "version": "1.0.9",
-  "homepage": "https://github.com/ukupat/grunt-collect-dependencies",
+  "homepage": "https://github.com/transferwise/grunt-collect-dependencies",
   "author": {
     "name": "Uku Pattak",
     "email": "uku.pattak@transferwise.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ukupat/grunt-collect-dependencies"
+    "url": "https://github.com/transferwise/grunt-collect-dependencies"
   },
   "bugs": {
-    "url": "https://github.com/ukupat/grunt-collect-dependencies/issues"
+    "url": "https://github.com/transferwise/grunt-collect-dependencies/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/ukupat/grunt-collect-dependencies/blob/master/LICENSE-MIT"
+      "url": "https://github.com/transferwise/grunt-collect-dependencies/blob/master/LICENSE-MIT"
     }
   ],
   "engines": {
