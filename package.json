@@ -1,7 +1,7 @@
 {
   "name": "grunt-collect-dependencies",
   "description": "Collect AngularJS app dependencies into a JSON file",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "homepage": "https://github.com/transferwise/grunt-collect-dependencies",
   "author": {
     "name": "Uku Pattak",
