@@ -1,1 +1,1 @@
-angular.module('hg.app', ['hg.app.phone', 'hg.tablet', 'ngRoute']);
+angular.module('hg.app', ['hg.app.phone', 'hg.tablet', 'hg.watch.apple', 'ngRoute']);
