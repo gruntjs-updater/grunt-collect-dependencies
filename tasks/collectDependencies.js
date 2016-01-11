@@ -18,7 +18,7 @@ module.exports = function (grunt) {
 		formatOptionPaths();
 		collectModuleDependenciesFor(options.appPath);
 
-		grunt.log.debug('App "' + options.appName + '" dependes on modules: ' + modules);
+		grunt.log.debug('App "' + options.appName + '" depends on modules: ' + modules);
 
 		write(dependenciesList());
 	});
@@ -29,8 +29,8 @@ module.exports = function (grunt) {
 	var options;
 	var modules = [];
 
-	function formatOptionPaths() {
-		options.src = path.join(options.src);
+	function formatOptionPaths() {		
+		options.src = Array.isArray(options.src) ? options.src.map(function(src) { return path.join(src); }) : [path.join(options.src)];		
 		options.dist = path.join(options.dist);
 	}
 
@@ -41,6 +41,7 @@ module.exports = function (grunt) {
 		for (var i = 0; i < appModules.length; i++) {
 			recursiveMagic(appModules[i]);
 		}
+
 		optimiseModulesList();
 	}
 
@@ -56,10 +57,10 @@ module.exports = function (grunt) {
 
 		if (parsedModules) {
 			var modules = [];
-
+			
 			for (var i = 0; i < parsedModules.length; i ++) {
 				modules.push(parsedModules[i].replace(/'/g, '').replace(options.removePrefix, '').replace(/\./g, '/'));
-			}
+			}			
 			return modules;
 		}
 		return [];
@@ -82,7 +83,7 @@ module.exports = function (grunt) {
 		}
 		var subModules = getListOfModulesFrom(getContent(module));
 
-		if (!subModules) {
+		if (!subModules) {			
 			return;
 		}
 		grunt.log.debug('Module "' + module + '" dependes on modules: ' + subModules);
@@ -104,17 +105,27 @@ module.exports = function (grunt) {
 		}
 		return grunt.file.read(modulePath);
 	}
+	
+	function isModule(module) {
+		return {
+			aChildOf: function(possibleParent){
+				return (module + '/').indexOf(possibleParent + '/') !== -1;
+			}
+		};
+	}
 
 	function optimiseModulesList() {
 		modules.sort();
 
+		var isAppNameIn = RegExp.prototype.test.bind(new RegExp('\\b' + options.appName + '\\b'));
+
 		for (var i = 0; i < modules.length; i++) {
-			if ((modules[i] + '/').indexOf(modules[i - 1] + '/') !== -1 || modules[i].indexOf(options.appName) !== -1) {
-				modules.splice(i, 1);
-				i--;
+			if (isModule(modules[i]).aChildOf(modules[i - 1]) || isAppNameIn(modules[i])) {				
+				modules.splice(i--, 1);				
 			}
-		}
+		}		
 	}
+
 
 	function dependenciesList() {
 		var dependencies = {js: [], html: []};
@@ -131,18 +142,30 @@ module.exports = function (grunt) {
 		return dependencies;
 	}
 
-	function getPath(module) {
-		var fullPath = getFullPathOf(module);
-		var modulePath = fullPath.split(options.src)[1].replace('Module.js', '');
+	function getPath(module) {		
+		var modulePath = trimPath(getFullPathOf(module), options.src).replace('Module.js', '');		
+		return path.join(options.baseUrl, modulePath);
+	}
 
-		return path.join(options.baseUrl, options.src, modulePath);
+	function trimPath(fullPath, trimStartingPoints) {
+		var pathToTrimFrom = trimStartingPoints.filter(function(src) {
+			return fullPath.indexOf(src) >= 0;
+		});
+		return pathToTrimFrom + fullPath.split(pathToTrimFrom)[1];
+	}
+
+	function getRelativePaths(srcDirectories /*, args */) {
+		var restOfPath = Array.prototype.slice.call(arguments, 1);
+		return srcDirectories.map(function(srcDirectory) {						
+			return path.join.apply(path, [options.basePath, srcDirectory].concat(restOfPath));
+		});
 	}
 
 	function getFullPathOf(module) {
-		var modulePath = findup(path.join(options.basePath, options.src, module, 'Module.js'), {nocase: true});
-
+		var modulePath = findup(getRelativePaths(options.src, module, 'Module.js'), {nocase: true});
+		
 		if (modulePath === null) {
-			return findup(path.join(options.basePath, options.src, '/*/', module, 'Module.js'), {nocase: true});
+			return findup(getRelativePaths(options.src, '/*/', module, 'Module.js'), {nocase: true});
 		}
 		return modulePath;
 	}

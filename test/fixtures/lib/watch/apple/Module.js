@@ -1,0 +1,1 @@
+angular.module('hg.watch.apple', ['hg.watch.motorolla']);

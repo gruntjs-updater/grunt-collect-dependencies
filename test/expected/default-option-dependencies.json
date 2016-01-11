@@ -3,9 +3,13 @@
     "src/modules/desktop/**/Module.js",
     "src/modules/tablet/**/Module.js",
     "src/modules/tv/**/Module.js",
+    "lib/watch/apple/**/Module.js",
+    "lib/watch/motorolla/**/Module.js",
     "src/modules/desktop/**/*.js",
     "src/modules/tablet/**/*.js",
     "src/modules/tv/**/*.js",
+    "lib/watch/apple/**/*.js",
+    "lib/watch/motorolla/**/*.js",
     "src/app/App.js",
     "src/app/**/Module.js",
     "src/app/**/*.js"
@@ -14,6 +18,8 @@
     "src/modules/desktop/**/*.html",
     "src/modules/tablet/**/*.html",
     "src/modules/tv/**/*.html",
+    "lib/watch/apple/**/*.html",
+    "lib/watch/motorolla/**/*.html",
     "src/app/**/*.html"
   ]
 }

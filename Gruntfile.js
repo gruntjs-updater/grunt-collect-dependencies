@@ -37,7 +37,7 @@ module.exports = function (grunt) {
 					appPath: 'src/app',
 					appFile: 'App.js',
 					appName: 'app',
-					src: 'src',
+					src: ['src', 'lib'],
 					baseUrl: '',
 					dist: 'tmp/default-option-dependencies.json',
 					removePrefix: 'hg.'
